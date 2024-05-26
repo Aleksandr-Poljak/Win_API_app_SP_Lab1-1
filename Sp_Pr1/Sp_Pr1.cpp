@@ -1,34 +1,39 @@
 #include <Windows.h>
-#include "Sp_Pr1.h"
-#include <ctime>
+
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPreevInstance,
 	LPSTR lpszCmdLine, int nCMDShow) 
 {
-	TCHAR message[300] = TEXT("Привет из Win32 приложения с графическим интерфейсом\nАвтор: Поляк А. (гр.30331)\n");
+	int iRetVal1, iRetVal2;
+	
+	LPCTSTR lpszMBTitle = TEXT("Изучение параметров MessageBox");
+	LPCTSTR lpszResponce;
 
-	// Время проектирования, задаем вручную
-	tm tm = {};
-	tm.tm_mday = 26;
-	tm.tm_mon = 5;
-	tm.tm_year = 2024;
-	tm.tm_hour = 17;
-	tm.tm_min = 0;
-	tm.tm_sec = 0;
+	do {
+		iRetVal1 = MessageBox(NULL,
+			TEXT("Окно сообщения содержит три кнопки:\n«Прервать», «Повтор» и «Пропустить».\nНажмите одну из кнопок.."),
+			lpszMBTitle,
+			MB_ABORTRETRYIGNORE | MB_ICONSTOP | MB_DEFBUTTON3);			
 
-	TCHAR DesingTimeStr[100];
-	wsprintf(DesingTimeStr, TEXT("Design time: %02d.%02d.%04d %02d:%02d:%02d\n"), 
-		tm.tm_mday, tm.tm_mon, tm.tm_year, tm.tm_hour, tm.tm_min, tm.tm_sec);
-	lstrcat(message, DesingTimeStr);
+		switch (iRetVal1) 
+		{
+		case IDRETRY:
+			lpszResponce = TEXT("Нажата кнопка 'Повтор'\nПродолжить?");
+			break;
+		case IDIGNORE:
+			lpszResponce = TEXT("Нажата кнопка 'Пропустить'\nПродолжить?");
+			break;
+		case IDABORT:
+			lpszResponce = TEXT("Нажата кнопка 'Прервать'\nПродолжить?");
+			break;
+		default: lpszResponce = TEXT("Ответ мне не понятен.");
+		}
+		TCHAR buffer[100] = TEXT("");
+		lstrcat(buffer, lpszResponce);
+		iRetVal2 = MessageBox(NULL, buffer, lpszMBTitle, MB_YESNO | MB_ICONQUESTION );
 
-	// Время запуска.
-	SYSTEMTIME RunTime ;
-	GetLocalTime(&RunTime);
-	TCHAR RunTimeStr[100];
-	wsprintf(RunTimeStr, TEXT("Design time: %02d.%02d.%04d %02d:%02d:%02d\n"),
-		RunTime.wDay, RunTime.wMonth, RunTime.wYear, RunTime.wHour, RunTime.wMinute, RunTime.wSecond);
-	lstrcat(message, RunTimeStr);
 
-	MessageBox(NULL, message, MESSAGE_TITLE, MB_OK);
+	} while (iRetVal2 != IDNO);
+	
 	return 0;
 }
